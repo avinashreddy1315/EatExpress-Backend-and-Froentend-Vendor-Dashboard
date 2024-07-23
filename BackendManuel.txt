@@ -1,0 +1,225 @@
+//Backend Steps
+  > setup and Installations 
+  > Connection to Database(MongoDb)
+  > Building Api's
+  > Authentications
+  > Controller with Logic's
+  > Routing
+  > Api Testing with PostMan
+  > Git hub
+  > Free Deploy
+
+
+
+Dependencies
+    > Express
+    > Mongoose
+    > Dotenv
+    > Body-parser
+    > nodemon -- To run my server automatically when changes apper
+    > jwt -- to convert email to token
+    > bcrypt -- used to hash the passwords and comparing password securly
+    > multer -- is used to upload images
+
+//Changes in package.js
+"scripts": {
+    "dev": "nodemon run dev",   -- for development phase for nodemon
+    "start": "node index"
+  },
+
+
+//Connecting to MongoDB
+  npm install mongodb
+
+    > This is mongodb url to connect
+  mongodb+srv://avinashreddy1315:Avinash@1315@cluster0.urbu0tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+
+  i) controller -> controllers are responsible for handing logics for different routes
+  and they peform CURD operation in database give give appriote response.
+
+  ii) Modals -> defined using schema which specify the fields and datatypes.
+
+  iii) Routes -> Routes defines the endpoint for your web application, they maps
+    HTTPS request to controller methods  and routes handle incoming request and map to
+    appriote controllers
+
+//Api Creation
+    Modals
+            vendors :- username, email, password, firm(id)
+            Firm(Resturent) :- FirstName(Resturent Name), Area, Category, Region, Offer, Image, vendor(id)
+            product : - product name, price, category[veg are non veg], image, best seller[boolean], description, firm(id).
+
+    Controllers 
+            vendorControllers
+                        -> vendorRegistet // Registor the vendor
+                        -> vendorLogin // to login the vendor
+                        -> getAllVendors // to get list of all vendors in the vendors
+                        -> getVendorById // to get the data for the vendor by id
+                        -> deleteVendorById // to delete the vendor by I 
+            firmController
+                        ->addFirm // to add the firm to the particular vendor
+                        -> deleteFirmById // to delete the firm by id
+            
+            productController
+                        -> addProduct // this is to add the product by firm id
+                        -> getProductByFirm // this is to get the list of all the products by firm id
+                        -> deleteProductById // this is t delete the product by id and update in firm
+    Routes
+        vendorRoutes
+            -> router.post("/register", VendorController.vendorRegister);
+            -> router.post("/login", VendorController.vendorLogin);
+            -> router.get("/all-vendors", VendorController.getAllVendors)
+            -> router.get("/single-vendor/:id", VendorController.getVendorById)
+            //this route is to delete teh vendor reletated firm and all the products
+            -> router.delete("/:vendorId", vendorControllers.deleteVendorById)
+        firmRoutes
+            -> router.post('/add-firm', verifyToken, firmRoutes.addFirm);
+                //this route is to delete the firm and all the related products
+                   and to update in the vendor firm array
+            -> router.delete('/:firmId', firmRoutes.deleteFirmById)
+        productRoutes
+            -> router.post('/add-product/:firmId', productController.addProduct)
+            -> router.get('/get-products/:firmId', productController.getProductsByFirm)
+                // this route is to delete the product and update in the firm product array
+            ->router.delete('/:productId', productController.deleteProductById)
+
+
+Modals
+    >Vendor Modals {username, email, password}
+        -we have to create a schemma by using new mongoose.schema({})
+        -Creating schemas in Mongoose is essential for defining the structure 
+        of documents within a MongoDB collection. Mongoose is an Object Data Modeling (
+        ODM) library for MongoDB and Node.js, which provides a straightforward 
+        schema-based solution to model your application data. Here are the main reasons
+        why schemas are important in Mongoose:
+    Schema :-
+    A schema defines the structure of the documents within a collection. 
+    It specifies the fields and their data types, as well as any validation 
+    rules or default values.
+
+    >Firm Modals {Firmname, Area, Region, Category, offer, image, vendor(relation)(connectiog with vendormodal)}
+
+        - as region and category are multipe  values we define as
+            type: [{
+                type: String,
+                enum : ['veg', 'non-veg']
+            }], ->type as array and then object with type string and enum with array and values.
+
+            type: [{
+                type: String,
+                enum: ['south-india', 'north-india', 'chinese', 'bakery']
+            }],
+
+            Firm is related to vendor to define relation between vendor and Firm
+            vendor:[{
+                type: mongoose.schema.types.objectId,
+                key: 'Vendor
+            }]
+    
+    > Product Modals {productName, Price, Image, category, description, Bestseller, firm}
+        - Best seller as bollen values
+        - productName, Price, Image, Description as an string 
+        - category as an array veg are non veg
+        -firm 
+          product is related to the firm so to define the relation between produt and firm
+          firm:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Firm'
+        }
+    ]
+
+controller 
+        > it will seperate the logic from routes efined properties of values in
+         the modal to save them in the database and perform curd opertion we use controllers
+
+Routes
+    >Routes define the endpoints for your web application. They map HTTP requests to 
+    controller methods. Routes handle incoming requests and pass them to the 
+    appropriate controller methods for processing. This helps in separating the 
+    routing logic from the actual request handling logic.
+
+
+JWT(JsonWebToken) 
+        >we will collect the unique id from the mongodb and convert it into jwt token
+        for security purpose
+        when ever the user login we will get id from mongodb and convert it into jwt token
+        jwt.sign we generate te new token every time the user is loggned in
+        const token = jwt.sign({vendorId: vendorData._id}, process.env.JWT_SECRETE_KEY, {expiresIn : '1h'})
+        it will take three parameters first one - id of the user
+        second one - secerate key which is stored in .env file 
+        third one - expiration it is option but we can define time like 1h, 2h, 3h the
+                    token will expire once time is done and new token is generated 
+                    immeditaly in that place.  
+
+-----> VerifyToken Middleware function
+
+//we are creating an middleware functin to verify the token 
+    this middelware wll take three paramenters req, res, next we when send the request
+    if the response is ok then only the next() function with excuted.
+
+req.body: Contains the main data payload of the request, sent in the body of the HTTP 
+        request and data form the user.
+
+req.headers: Commonly used for authentication tokens, content type specifications, 
+            caching controls, etc.
+
+    -> first we will get the token from req.header.token and store it in token variable
+    -> second we will decode the token  while user logging in the _id of an vendor in database
+        is encoded and stored in token variable and now we are decoding it.
+    -> third by usign the decoded vendor id we are verifying in with databse by modalname.findbtId
+        vendorModal.findById(decode.vendorId)
+        means we are coming weather the _id in database and vendorId is bot are same are not
+
+
+----> firmController
+    * This is the logic to add the firm to that particular vendor.
+    * we had created and function with name add firm and got all the fields like
+        firmname, area, cateory, region, offer, image by using req.body
+        we are getting the vendor data by using findById
+        vendormodal.findById(req.vendorId).
+
+    * As we are adding an image we have an seperate package to add the image
+        multer to add the images and files
+    * The above code is an standard code to add the images in folder called upload 
+        and generate them with an unique namewe have to create an folder with name upload to store the images
+
+        const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, 'uploads/') //Destination folder where the uploaded images will be stored
+        },
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + '-' + file.originalname); //Generating a unique filename
+        }
+      })
+    
+    * create an ibstace of an object that u want to add it databse and save it using
+        await firm.save()
+    * export the addfirm function as moduel as we have an upload image so we have to
+      export as module.exports = { addFirm: [upload.single('image'), addFirm] };
+
+-------------------------------------
+-> vendor can registore only one with one email id
+-> once vendor started adding the resturents  he id of the each firm(resturent)
+   will be be add to the firm array in each vendor data.
+-> similarly the  respective vendor id is added to the firm
+
+
+
+---------------------------------
+now we are creating an get fuction to get all the vendor details with ther firm to
+-> we are creating getAllVendors 
+const vendors = await vendarModal.find().populate('firm')
+by using the .find() -> without any arguments it will return all the documents in vendors collection.
+-> .populate() -> The .populate() method is used to replace the specified field(s) in a document with 
+    documents from another collection. This is typically used for fields that store references 
+    (ObjectIds) to documents in other collections.
+
+    ex:- like firm[{
+        firmname : "paradise"
+        ----
+    },{
+        firmname: "alpha"
+        -----
+    }]
