@@ -32,7 +32,7 @@ mongoose.connect(process.env.MONGO_URI)
     console.log(error)
 )
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 /*App.listen is an method to start the server on which port number it will take two
 parameters one port and other callback funtion */
@@ -44,6 +44,6 @@ app.listen(PORT, ()=>{
 /*with app.use we will create an route when user hit his route it callback function 
 will give response if there is no error callback function will take two paratmes 
 request and response */
-app.use('/home', (req, res)=>{
+app.use('/', (req, res)=>{
     res.send("<h1>Welcome to EatExpress</h1>")
 })
