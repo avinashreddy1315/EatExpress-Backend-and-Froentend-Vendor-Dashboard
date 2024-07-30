@@ -5,12 +5,18 @@ const firmRoutes = require('./routes/firmRoutes');
 const productRoutes = require('./routes/productRoutes')
 const bodyParser = require('body-parser')
 const path = require('path')
+const cors = require('cors')
 
 const dotEnv = require('dotenv');
 dotEnv.config()
 
+app.use(cors())
 //bodyParser.json() it will convert the incoming data into json formate 
-app.use(bodyParser.json())
+
+
+app.use(bodyParser.json({ limit: '10mb' })); // Increase limit as needed
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 //toCreate an http request we will use an middle ware caped app.use
 //this is all the routes that we can access in vendor routes
 app.use('/vendor', vendorRoutes);

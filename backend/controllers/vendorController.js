@@ -21,14 +21,20 @@ const vendorRegister = async(req, res) =>{
     //req.body: Contains the main data payload of the request, sent in the body of the HTTP request.
     const {username, email, password} = req.body;
     try{
+        // Regex pattern for email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!emailPattern.test(email)) {
+        return res.status(399).json({ message: "Invalid email format" });
+    }
+        
         //This is used to check wether email is alredy registred are not
         //findOne take it as object
         const vendorEmail = await vendarModal.findOne({email})
 
         //If user is alredy registred it will return email alredy taken
         if(vendorEmail){
-            return res.status(400).json("Email already taken")
+            return res.status(400).json({message : "Email already taken"})
         }
 
         //we are using .hash to hash the password in 10 round security
@@ -55,6 +61,14 @@ const vendorRegister = async(req, res) =>{
 const vendorLogin = async(req, res) =>{
     const {email, password} = req.body
     try{
+
+         // Regex pattern for email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+        return res.status(399).json({ message: "Invalid email format" });
+    }
+    
         //checking if email alredy registred with vendalmodal schema are not
         const vendorData = await vendarModal.findOne({email});
 
@@ -67,7 +81,7 @@ const vendorLogin = async(req, res) =>{
          to vendorId and it is taking jwt_secrete_key  */
         const token = jwt.sign({vendorId: vendorData._id}, process.env.JWT_SECRETE_KEY, {expiresIn : '1h'})
         res.status(200).json({succes: "Login successful", token})
-        console.log(email);
+        //console.log(email);
        
     }catch(error){
         console.error(error);
@@ -110,6 +124,20 @@ const getVendorById = async(req, res) =>{
 }
 
 
+const getVendor = async(req, res) =>{
+    try {
+        const vendorData = await vendarModal.findById(req.vendorId).populate('firm');
+        if (!vendorData) {
+            return res.status(404).json({ message: "Vendor not found" });
+        }
+        res.status(200).json({vendorData});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({error : "Internal server error"})
+    }
+}
+
+
 const deleteVendorById = async(req, res)=>{
     try {
        const vendorId = req.params.vendorid;
@@ -139,4 +167,4 @@ const deleteVendorById = async(req, res)=>{
 }
 
 
-module.exports = {vendorRegister, vendorLogin, getAllVendors, getVendorById, deleteVendorById}
+module.exports = {vendorRegister, vendorLogin, getAllVendors, getVendorById, deleteVendorById, getVendor}

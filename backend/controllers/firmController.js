@@ -2,6 +2,7 @@ const firmModal = require('../models/firmModal');
 const vendorModal = require('../models/vendorModal');
 const productModal = require('../models/productModal')
 const multer = require('multer')
+const path = require('path')
 
 
 const storage = multer.diskStorage({
@@ -15,11 +16,20 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage })
 
-const addFirm = async (req, res) => {
+  const addFirm = async (req, res) => {
     try {
-        const { firmName, Area, Category, Region, Offer} = req.body;
+        const { firmName, Area, Offer } = req.body;
+        const selectedCategory = req.body.Category.split(',');
+        const selectedRegion = req.body.Region.split(',');
 
         const image = req.file ? req.file.filename : undefined;
+
+        // Check if the firm name already exists
+        const existingFirm = await firmModal.findOne({ firmName });
+        if (existingFirm) {
+            return res.status(400).json({ message: "Firm already exists" });
+        }
+
         const vendorData = await vendorModal.findById(req.vendorId);
         if (!vendorData) {
             return res.status(404).json({ message: "Vendor not found" });
@@ -28,25 +38,25 @@ const addFirm = async (req, res) => {
         const firm = new firmModal({
             firmName,
             Area,
-            Category,
-            Region,
+            Category: selectedCategory,
+            Region: selectedRegion,
             Offer,
             image,
             vendor: vendorData._id
-            
         });
 
-        const savedFirm = await firm.save(); 
+        const savedFirm = await firm.save();
 
         vendorData.firm.push(savedFirm);
-
         await vendorData.save();
+
         return res.status(200).json({ message: "Firm added successfully" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 
 const deleteFirmById = async (req, res) =>{

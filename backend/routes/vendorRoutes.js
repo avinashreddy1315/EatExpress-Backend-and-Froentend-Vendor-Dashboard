@@ -1,5 +1,7 @@
 const VendorController = require("../controllers/vendorController")
 const express = require('express');
+const Vendor = require("../models/vendorModal");
+const verifyToken = require("../middlewares/verifyToken")
 
 //Router is an inbult method
 const router = express.Router();
@@ -14,7 +16,6 @@ router.post("/login", VendorController.vendorLogin);
 router.get("/all-vendors", VendorController.getAllVendors)
 router.get("/single-vendor/:id", VendorController.getVendorById)
 router.delete("/:vendorid", VendorController.deleteVendorById)
-
-
+router.get('/get-vendor', verifyToken,  VendorController.getVendor)
 //exporing the router which will export the all the routes under it
 module.exports = router;
