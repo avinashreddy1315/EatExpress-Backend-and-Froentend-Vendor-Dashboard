@@ -20,6 +20,7 @@ Dependencies
     > jwt -- to convert email to token
     > bcrypt -- used to hash the passwords and comparing password securly
     > multer -- is used to upload images
+    > cors
 
 //Changes in package.js
 "scripts": {

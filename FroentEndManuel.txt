@@ -1,0 +1,22 @@
+installation
+   - npx create-react-app -- not recommended
+   - npm create vite@latest
+
+components
+      -vendorDashboard
+        -> Navbar 
+        -> Sidebar 
+        -> All_products
+        -> user
+
+        forms:
+            -> vendor_registor
+                 ->UserName (Name)
+                 -> email
+                 -> password
+            -> vendor_login
+                 -> email
+                 -> password
+            -> Add firm
+            -> Add Products
+        
