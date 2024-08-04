@@ -58,6 +58,45 @@ const vendorRegister = async(req, res) =>{
 }
 
 
+
+const vendorUpdate = async (req, res) => {
+    try {
+      const { vendorId } = req.params;
+      const { username, email } = req.body;
+  
+  
+      // Find the vendor by ID
+      const vendorData = await vendarModal.findById(vendorId);
+      if (!vendorData) {
+        return res.status(404).json({ message: "Vendor not found" });
+      }
+  
+      // Check if the email is already registered to another vendor
+      if(email && email !== vendorData.email){
+        const vendorEmail = await vendarModal.findOne({email})
+        //If user is alredy registred it will return email alredy taken
+        if(vendorEmail){
+            return res.status(400).json({message : "Email already taken"})
+        }
+
+      }
+      
+
+        
+  
+      // Update vendor fields only if they are provided in the request body
+      if (username !== undefined) vendorData.username = username;
+      if (email !== undefined) vendorData.email = email;
+  
+      const updatedVendor = await vendorData.save();
+      res.status(200).json({ message: "Vendor updated successfully", vendor: updatedVendor});
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
+
 const vendorLogin = async(req, res) =>{
     const {email, password} = req.body
     try{
@@ -167,4 +206,4 @@ const deleteVendorById = async(req, res)=>{
 }
 
 
-module.exports = {vendorRegister, vendorLogin, getAllVendors, getVendorById, deleteVendorById, getVendor}
+module.exports = {vendorRegister, vendorLogin, getAllVendors, getVendorById, deleteVendorById, getVendor, vendorUpdate}

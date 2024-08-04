@@ -11,6 +11,7 @@ const router = express.Router();
 router.post('/add-firm', verifyToken, firmRoutes.addFirm);
 
 router.delete('/:firmId', firmRoutes.deleteFirmById)
+router.patch('/update-firm/:firmId', firmRoutes.updateFirmByFirmId)
 
 
 router.get('/uploads/:imageName', (req, res)=>{

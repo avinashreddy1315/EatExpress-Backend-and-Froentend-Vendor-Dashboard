@@ -7,6 +7,7 @@ const router = express.Router()
 router.post('/add-product/:firmId', productController.addProduct)
 router.get('/get-products/:firmId', productController.getProductsByFirm)
 router.delete('/:productId', productController.deleteProductById)
+router.patch('/update-product/:productId', productController.updateProductByProductId)
 
 router.get('/uploads/:imageName', (req, res)=>{
     const imageName = req. params.imageName;

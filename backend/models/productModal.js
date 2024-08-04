@@ -18,10 +18,7 @@ const productSchema = mongoose.Schema({
     },
 
     category:{
-        type: [{
-            type : String,
-            enum: ['veg', 'non-veg'],
-        }],
+        type: String,
         required: true
     },
 
@@ -30,6 +27,9 @@ const productSchema = mongoose.Schema({
     },
 
     BestSeller:{
+        type:Boolean
+    },
+    OutofStock:{
         type:Boolean
     },
     firm:[
