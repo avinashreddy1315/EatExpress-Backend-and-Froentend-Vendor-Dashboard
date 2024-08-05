@@ -1,6 +1,9 @@
 import React from 'react'
+import { UseUserDataAndAuth } from '../data/UserData'
 
 function Welcome() {
+
+  
   return (
     <div>
       <h2>Welcome</h2>

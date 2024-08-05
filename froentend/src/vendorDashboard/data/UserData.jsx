@@ -8,6 +8,7 @@ const UserDataAndAuthContext = createContext();
 export const UserDataAndAuthContextProvider = (props) => {
   const [token, setToken] = useState(null);
   const [vendorData, setVendorData] = useState({})
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() =>{
     const t = localStorage.getItem('loginToken');
@@ -16,6 +17,7 @@ export const UserDataAndAuthContextProvider = (props) => {
 
 
   const fetchUserData = async () =>{
+    setLoading(true)
     try {
       const response = await fetch(`${API_URL}/vendor/get-vendor`, {
         method: 'GET',
@@ -37,6 +39,8 @@ export const UserDataAndAuthContextProvider = (props) => {
       }
     } catch (error) {
       console.log('login failed', error);
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -52,7 +56,7 @@ export const UserDataAndAuthContextProvider = (props) => {
 
   
 
-  const contextValue = { token, setToken, vendorData, fetchUserData};
+  const contextValue = { token, setToken, vendorData, fetchUserData, loading};
 
   return (
     <UserDataAndAuthContext.Provider value={contextValue}>

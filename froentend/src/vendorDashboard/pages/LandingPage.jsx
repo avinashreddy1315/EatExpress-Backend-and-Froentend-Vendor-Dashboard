@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogContent, IconButton } from '@mui/material';
+import { CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
 import NavBar from '../components/NavBar';
 import SideBar from '../components/SideBar';
 import VendorLogin from '../components/forms/VendorLogin';
@@ -16,7 +16,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const LandingPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogContent, setDialogContent] = useState(null);
-  const { token, setToken, vendorData } = UseUserDataAndAuth();
+  const { token, setToken, vendorData, loading } = UseUserDataAndAuth();
 
   useEffect(() => {
     setToken(localStorage.getItem('loginToken'));
@@ -53,6 +53,7 @@ const LandingPage = () => {
         <div style={{ width: '250px' }}>
           <SideBar handleOpenDialog={handleOpenDialog} handleCloseDialog={handleCloseDialog} />
         </div>
+        {loading ? <div style={{position:'relative', left : '500px', top: '200px'}}><CircularProgress size={60} thickness={5}/> </div>  :
         <div style={{ width: '75%', padding: '16px' }}>
           {token ? (
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -69,6 +70,7 @@ const LandingPage = () => {
             
           )}
         </div>
+        }
       </div>
     </section>
   );

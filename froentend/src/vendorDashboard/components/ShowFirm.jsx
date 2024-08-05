@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UseUserDataAndAuth } from '../data/UserData';
-import { Card, CardContent, CardMedia, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import styled from '@emotion/styled';
@@ -59,7 +59,7 @@ const DeleteButton = styled(IconButton)(({ theme }) => ({
 }));
 
 function ShowFirm() {
-  const { vendorData, fetchUserData } = UseUserDataAndAuth();
+  const { vendorData, fetchUserData, loading } = UseUserDataAndAuth();
   const { handleOpenDialog, handleCloseDialog } = useOutletContext();
   let navigate = useNavigate();
 
@@ -115,6 +115,8 @@ function ShowFirm() {
         <h2>Firms</h2>
         <Button className='addpfbutton' variant="contained" color="primary" onClick={() => handleOpenDialog(<AddFirm handleCloseDialog={handleCloseDialog} />)}>Add Firm</Button>
       </div>
+
+      {loading ? <div style={{position:'relative', left : '500px', top: '100px'}}><CircularProgress size={60} thickness={5}/> </div> :
       
       <div className='showfirm'>
         {vendorData.firm && vendorData.firm.length > 0 ? vendorData.firm.map((item) => (
@@ -151,7 +153,7 @@ function ShowFirm() {
                 <p className='no_firm_product_message'>No firm's available please Add</p>
               </div>}
       </div>
-      
+    }
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

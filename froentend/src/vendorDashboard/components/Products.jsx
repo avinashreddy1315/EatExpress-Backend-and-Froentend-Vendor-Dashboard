@@ -5,7 +5,7 @@ import { API_URL } from '../data/ApiPath';
 import AddProduct from './forms/AddProduct';
 import DeleteIcon from '@mui/icons-material/Delete';
 import styled from '@emotion/styled';
-import { Card, CardContent, CardMedia, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, CircularProgress } from '@mui/material';
 import noimage from '../../../public/images/noimage.jpeg';
 import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -105,6 +105,7 @@ function Products() {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const { handleOpenDialog, handleCloseDialog } = useOutletContext();
   const [editproduct, setEditProduct] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     if (token) {
@@ -113,6 +114,7 @@ function Products() {
   }, [token]);
 
   const fetchProductByFirmId = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/product/get-products/${firmId}`, {
         method: 'GET',
@@ -131,6 +133,8 @@ function Products() {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading to false after API call
     }
   };
 
@@ -184,51 +188,52 @@ function Products() {
         <Button className='addpfbutton' variant="contained" color="primary" onClick={() => handleOpenDialog(<AddProduct handleCloseDialog={handleCloseDialog} firmId={firmId} firmName={productData.resturentName} fetchProductByFirmId={fetchProductByFirmId} />)}>
           Add Product
         </Button>
-      </div>
-      <div className='showProduct'>
-        {productData.products && productData.products.length > 0 ? (
-          productData.products.map((item) => (
-            <div className='productcard' key={item._id}>
-              <FirmCard>
-                <EditButton>
-                  <EditIcon onClick={(e) => { e.stopPropagation(), handleEditProduct(item) }} />
-                </EditButton>
-                <CardMedia
-                  sx={{ height: 130, width: '100%', objectFit: 'fill' }}
-                  image={`${API_URL}/uploads/${item.image}`}
-                  title={item.Productname}
-                />
-                {item.BestSeller && (
-                  <BestsellerLabel >
-                    <span>Best Seller</span>
-                  </BestsellerLabel>
-                )}
-                <CardContent>
-
-                  <Typography variant="h6" component="div">{item.Productname}</Typography>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '-10px', marginBottom: '-10px'}}>
-                    <Dot category={item.category} />
-                    <p>{item.category}</p>
-                  </div>
-                  {item.OutofStock && (
-                    <OutOfStockLabel>
-                      <span>Out Of Stock</span>
-                      </OutOfStockLabel>
+      </div>{loading ? <div style={{position:'relative', left : '500px', top: '100px'}}><CircularProgress size={60} thickness={5}/> </div>:
+        <div className='showProduct'>
+          {productData.products && productData.products.length > 0 ? (
+            productData.products.map((item) => (
+              <div className='productcard' key={item._id}>
+                <FirmCard>
+                  <EditButton>
+                    <EditIcon onClick={(e) => { e.stopPropagation(), handleEditProduct(item) }} />
+                  </EditButton>
+                  <CardMedia
+                    sx={{ height: 130, width: '100%', objectFit: 'fill' }}
+                    image={`${API_URL}/uploads/${item.image}`}
+                    title={item.Productname}
+                  />
+                  {item.BestSeller && (
+                    <BestsellerLabel >
+                      <span>Best Seller</span>
+                    </BestsellerLabel>
                   )}
-                  <Typography variant="h7" component="div" sx={{display: 'flex', alignItems: 'center'}}><CurrencyRupeeIcon sx={{fontSize : '16px'}}/><span>{item.price}</span></Typography>
-                </CardContent>
-                <DeleteButton className="deleteButton" onClick={(e) => { e.stopPropagation(); handleOpenDeleteDialog(item._id); }}>
-                  <DeleteIcon sx={{ color: 'red' }} />
-                </DeleteButton>
-              </FirmCard>
+                  <CardContent>
+
+                    <Typography variant="h6" component="div">{item.Productname}</Typography>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '-10px', marginBottom: '-10px' }}>
+                      <Dot category={item.category} />
+                      <p>{item.category}</p>
+                    </div>
+                    {item.OutofStock && (
+                      <OutOfStockLabel>
+                        <span>Out Of Stock</span>
+                      </OutOfStockLabel>
+                    )}
+                    <Typography variant="h7" component="div" sx={{ display: 'flex', alignItems: 'center' }}><CurrencyRupeeIcon sx={{ fontSize: '16px' }} /><span>{item.price}</span></Typography>
+                  </CardContent>
+                  <DeleteButton className="deleteButton" onClick={(e) => { e.stopPropagation(); handleOpenDeleteDialog(item._id); }}>
+                    <DeleteIcon sx={{ color: 'red' }} />
+                  </DeleteButton>
+                </FirmCard>
+              </div>
+            ))
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Typography variant='h6' component="div" >No Products Added for this firm</Typography>
             </div>
-          ))
-        ) : (
-          <div style={{display : 'flex', alignItems : 'center', justifyContent: 'center'}}>
-          <Typography variant='h6' component="div" >No Products Added for this firm</Typography>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      }
       <Dialog
         open={openDialog}
         onClose={handleCloseDeleteDialog}
