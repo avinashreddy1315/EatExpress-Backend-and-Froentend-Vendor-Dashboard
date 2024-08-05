@@ -72,7 +72,7 @@ function ShowFirm() {
   };
 
   useEffect(() =>{
-    console.log(vendorData)
+    console.log(vendorData.firm)
   },[])
 
   const handleDelete = async () => {
@@ -125,7 +125,7 @@ function ShowFirm() {
               </EditButton>
               <CardMedia
                 sx={{ height: 120, width: '100%', objectFit: 'cover' }}
-                image="images/noimage.jpeg"
+                image={`${API_URL}/uploads/${item.image}`}
                 title={item.firmName}
               />
               <CardContent>
@@ -147,7 +147,9 @@ function ShowFirm() {
               </DeleteButton>
             </FirmCard>
           </div>
-        )) : <p>No firms available please Add</p>}
+        )) :  <div className='no_firm_product'>
+                <p className='no_firm_product_message'>No firm's available please Add</p>
+              </div>}
       </div>
       
       <Dialog

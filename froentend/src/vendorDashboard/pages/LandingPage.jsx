@@ -8,6 +8,7 @@ import { Close } from '@mui/icons-material';
 import { UseUserDataAndAuth } from '../data/UserData';
 import { Outlet } from 'react-router-dom';
 
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
@@ -61,7 +62,11 @@ const LandingPage = () => {
               </div>
             </div>
           ) : (
-            <p>Please Login</p>
+            <div className='without_login'>
+              <img id='eatexpress_logo_landingpage' src='/images/eatexpress.jpg' alt="EatExpress" />
+                <p id='please_login'>Please Login With Your Vendor Details</p>
+            </div>
+            
           )}
         </div>
       </div>

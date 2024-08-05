@@ -10,6 +10,8 @@ import noimage from '../../../public/images/noimage.jpeg';
 import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+
 const FirmCard = styled(Card)(({ theme }) => ({
   position: 'relative',
   '&:hover .deleteButton': {
@@ -27,7 +29,7 @@ const EditButton = styled(IconButton)(({ theme }) => ({
   position: 'relative',
   float: 'right',
   right: '10px',
-  top: '10px',
+  top: '15px',
   '&:hover': {
     backgroundColor: 'lightblue'
   }
@@ -43,7 +45,7 @@ const DeleteButton = styled(IconButton)(({ theme }) => ({
   bottom: '15px',
   right: '10px',
   transition: 'opacity 0.3s ease-in, transform 0.3s ease-in, visibility 0.3s ease-in',
-  transform: 'translateY(50px)',
+  transform: 'translateY(60px)',
   '&:hover': {
     backgroundColor: 'lightgray',
   },
@@ -56,6 +58,43 @@ const Dot = styled.span`
   border-radius: 50%;
   background-color: ${({ category }) => (category === 'Non-Veg' ? 'red' : 'green')};
   margin-right: 5px;
+`;
+
+const OutDot = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: gray;
+  margin-right: 5px;
+`;
+
+const BestsellerLabel = styled.div`
+display: flex;
+align-items: center;
+background-color: #f44336; /* Red color for the badge */
+color: white; /* White text */
+padding: 5px 7px;
+border-radius: 5px;
+position: absolute;
+top: 10px; /* Adjust position as needed */
+left: -5px; /* Adjust position as needed */
+font-size: 14px; /* Adjust font size as needed */
+font-weight: bold;
+`;
+
+const OutOfStockLabel = styled.div`
+display: flex;
+align-items: center;
+background-color: gray;
+color: white; /* White text */
+padding: 5px 7px;
+border-radius: 5px;
+position: absolute;
+top: 45px; /* Adjust position as needed */
+left: -5px; /* Adjust position as needed */
+font-size: 14px; /* Adjust font size as needed */
+font-weight: bold;
 `;
 
 function Products() {
@@ -130,12 +169,12 @@ function Products() {
   };
 
   const handleEditProduct = (product) => {
-    handleOpenDialog( <AddProduct 
-      handleCloseDialog={handleCloseDialog} 
-      firmId={firmId} 
-      firmName={productData.resturentName} 
+    handleOpenDialog(<AddProduct
+      handleCloseDialog={handleCloseDialog}
+      firmId={firmId}
+      firmName={productData.resturentName}
       fetchProductByFirmId={fetchProductByFirmId}
-      productData = {product} />)
+      productData={product} />)
   }
 
   return (
@@ -156,15 +195,27 @@ function Products() {
                 </EditButton>
                 <CardMedia
                   sx={{ height: 130, width: '100%', objectFit: 'fill' }}
-                  image={noimage}
+                  image={`${API_URL}/uploads/${item.image}`}
                   title={item.Productname}
                 />
+                {item.BestSeller && (
+                  <BestsellerLabel >
+                    <span>Best Seller</span>
+                  </BestsellerLabel>
+                )}
                 <CardContent>
+
                   <Typography variant="h6" component="div">{item.Productname}</Typography>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '-10px', marginBottom: '-10px'}}>
                     <Dot category={item.category} />
                     <p>{item.category}</p>
                   </div>
+                  {item.OutofStock && (
+                    <OutOfStockLabel>
+                      <span>Out Of Stock</span>
+                      </OutOfStockLabel>
+                  )}
+                  <Typography variant="h7" component="div" sx={{display: 'flex', alignItems: 'center'}}><CurrencyRupeeIcon sx={{fontSize : '16px'}}/><span>{item.price}</span></Typography>
                 </CardContent>
                 <DeleteButton className="deleteButton" onClick={(e) => { e.stopPropagation(); handleOpenDeleteDialog(item._id); }}>
                   <DeleteIcon sx={{ color: 'red' }} />
@@ -173,7 +224,9 @@ function Products() {
             </div>
           ))
         ) : (
-          <p>No Products available for this firm</p>
+          <div style={{display : 'flex', alignItems : 'center', justifyContent: 'center'}}>
+          <Typography variant='h6' component="div" >No Products Added for this firm</Typography>
+          </div>
         )}
       </div>
       <Dialog

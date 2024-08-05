@@ -107,7 +107,7 @@ h3 {
 .showfirm, .showProduct{
     display: flex;
     justify-content: flex-start;
-    gap: 80px;
+    gap: 50px;
     flex-wrap: wrap;
 }
 
@@ -116,9 +116,42 @@ h3 {
     width: 280px;
     height: 10px;
     cursor: pointer;
+    position: relative;
 }
 
 .addpfbutton{
     width: 150px;
     height: 50px;
+}
+
+.without_login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    top: 120px;
+    
+}
+
+#please_login{
+    font-size: 45px;
+    color: gray;
+}
+
+#eatexpress_logo_landingpage{
+    width: 400px;
+}
+
+.no_firm_product_message{
+    color: gray;
+    font-size: 30px;
+}
+
+.no_firm_product{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 100px;
+    left: 350px;
 }
